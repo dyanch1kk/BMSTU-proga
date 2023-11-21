@@ -1,0 +1,208 @@
+#include <iostream>
+#include <string>
+#include <fstream>
+#include <vector>
+#include <algorithm>
+
+struct Book {
+    std::string name;
+    std::string author;
+    int age;
+};
+
+
+using namespace std;
+
+int main()
+{
+    setlocale(0,"");
+    int choice;
+    do {
+        cout << "Меню:" << endl;
+        cout << "1. Добавить книгу" << endl;
+        cout << "2. Поиск книги по названию" << endl;
+        cout << "3. Вывод списка всех книг" << endl;
+        cout << "4. Сортировать книги по году издания" << endl;
+        cout << "5. Сортировать книги по автору" << endl;
+        cout << "0. Выйти" << std::endl;
+        cout << "Выберите действие: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1: {
+
+                cin.ignore();
+                string name, author;
+                int age;
+                cout << "Введите название книги: ";
+                getline(cin, name);
+                if (name.empty()) {
+                    cout << "Ввод завершен. " <<endl;
+                    break;
+                }
+                //n.push_back(name);
+                cout << "Введите автора: ";
+                getline(cin, author);
+                //au.push_back(author);
+                cout << "Введите год издания: ";
+                cin >> age;
+                //ag.push_back(age);
+                Book boom = {name, author, age};
+                ofstream file("book.txt",ios::app);
+                if (file.is_open())
+                {
+                    file<<"'"<<boom.name<<"' "<<boom.author<<", "<<boom.age<<"\n";
+                    file.close();
+                    cout << "Книга добавлена." << endl;
+                }
+                else
+                {
+                    cerr << "Не удалось открыть файл для записи." << endl;
+                }
+                cout<<endl;
+                break;
+            }
+            case 2: {
+                cin.ignore();
+                string boo;
+                cout << "Введите название для поиска: ";
+                getline(cin,boo);
+                ifstream infile("book.txt");
+                ofstream outfile("book1.txt");
+                if (infile.is_open() && outfile.is_open())
+                {
+                    string line;
+                    while (getline(infile, line))
+                    {
+                        size_t pos = line.find(boo);
+
+                        if (pos != string::npos)
+                        {
+                            outfile << line << endl;
+                        }
+                    }
+                    infile.close();
+                    outfile.close();
+                }
+                else
+                {
+                    cerr << "Не удалось открыть файл." << endl;
+                }
+                ifstream file("book1.txt");
+                {
+                    string l;
+                    while (getline(file, l))
+                    {
+                        cout<<l;
+                    }
+                file.close();
+                }
+                cout<<endl;
+                break;
+            }
+            case 3: {
+                ifstream file("book.txt");
+                {
+                    string l;
+                    while (getline(file, l))
+                    {
+                        cout<<l<<endl;
+                    }
+                file.close();
+                }
+                cout<<endl;
+                break;
+            }
+            case 4: {
+                ifstream inFile("book.txt");
+                if (inFile.is_open()) {
+                    string lines[100];
+                    int count = 0;
+                    string line;
+                    while (getline(inFile, line)) {
+                        lines[count] = line;
+                        count++;
+                    }
+                    inFile.close();
+                    for (int i = 0; i < count - 1; i++) {
+                        for (int j = 0; j < count - i - 1; j++) {
+                            size_t pos1 = lines[j].find_last_of(',');
+                            size_t pos2 = lines[j + 1].find_last_of(',');
+                            double age1 = stod(lines[j].substr(pos1 + 1));
+                            double age2 = stod(lines[j + 1].substr(pos2 + 1));
+                            if (age1 > age2) {
+                                swap(lines[j], lines[j + 1]);
+                            }
+                        }
+                    }
+                        ofstream outFile("book.txt");
+                    if (outFile.is_open()) {
+                        for (int i = 0; i < count; i++) {
+                            outFile << lines[i] << std::endl;
+                        }
+                        outFile.close();
+                            cout << "Книги отсортированы по году издания" << std::endl;
+                        }
+                        else {
+                            cerr << "Не удалось открыть файл для записи." << std::endl;
+                        }
+                    }
+                    else {
+                        cerr << "Не удалось открыть файл для чтения." << std::endl;
+                    }
+                break;
+            }
+            case 5:{
+
+                ifstream inFile("book.txt");
+                if (inFile.is_open()) {
+                    string lines[100];
+                    int count = 0;
+                    string line;
+                    while (getline(inFile, line)) {
+                        lines[count] = line;
+                        count++;
+                    }
+                    inFile.close();
+                    for (int i = 0; i < count - 1; i++) {
+                        for (int j = 0; j < count - i - 1; j++) {
+                            size_t pos1 = lines[j].find_last_of('\'');
+                            size_t pos2 = lines[j + 1].find_last_of('\'');
+                            size_t pos3 = lines[j].find_last_of(',');
+                            size_t pos4 = lines[j+1].find_last_of(',');
+                            string age1 = lines[j].substr(pos1 + 1,pos3-pos1);
+                            string age2 = lines[j + 1].substr(pos2 + 1,pos4-pos2);
+
+                            if (age1 > age2) {
+                                swap(lines[j], lines[j + 1]);
+                            }
+                        }
+                    }
+                    ofstream outFile("book.txt");
+                    if (outFile.is_open()) {
+                        for (int i = 0; i < count; i++) {
+                            outFile << lines[i] << endl;
+                        }
+                        outFile.close();
+                        cout << "Книги отсортированы по автору" << std::endl;
+                        }
+                        else {
+                        cerr << "Не удалось открыть файл для записи." << std::endl;
+                        }
+                    }
+                    else {
+                    cerr << "Не удалось открыть файл для чтения." << std::endl;
+                    }
+                    break;
+                }
+            case 0: {
+            }
+            default: {
+                cout << "Неверный выбор. Попробуйте снова." << endl;
+                break;
+            }
+        }
+    } while (choice != 0);
+
+    return 0;
+}
