@@ -1,0 +1,68 @@
+#include <iostream>
+#include <string>
+#include <vector>
+
+class MusicalInstrument {
+protected:
+    std::string name;
+    std::string material;
+
+public:
+    MusicalInstrument(const std::string& name, const std::string& material)
+        : name(name), material(material) {
+    }
+
+    virtual void display() const {
+        std::cout << "Название инструмента: " << name << std::endl;
+        std::cout << "Материал изготовления: " << material << std::endl;
+    }
+};
+class StringInstrument : public MusicalInstrument {
+private:
+    int numStrings;
+
+public:
+    StringInstrument(const std::string& name, const std::string& material, int numStrings)
+        : MusicalInstrument(name, material), numStrings(numStrings) {
+    }
+
+    void display() const override {
+        MusicalInstrument::display();
+        std::cout << "Количество струн: " << numStrings << std::endl;
+    }
+};
+
+class BrassInstrument : public MusicalInstrument {
+private:
+    std::string brassType;
+
+public:
+    BrassInstrument(const std::string& name, const std::string& material, const std::string& brassType)
+        : MusicalInstrument(name, material), brassType(brassType) {
+    }
+
+    void display() const override {
+        MusicalInstrument::display();
+        std::cout << "Тип латуни: " << brassType << std::endl;
+    }
+};
+int main() {
+    std::vector<MusicalInstrument*> instruments;
+    setlocale(0,"");
+    StringInstrument* guitar = new StringInstrument("Гитара", "Дерево", 6);
+    BrassInstrument* trumpet = new BrassInstrument("Труба", "Медь", "C");
+
+    instruments.push_back(guitar);
+    instruments.push_back(trumpet);
+
+    for (auto it = instruments.begin(); it != instruments.end(); ++it) {
+        (*it)->display();
+    }
+
+    for (auto it = instruments.begin(); it != instruments.end(); ++it) {
+        delete *it;
+    }
+    instruments.clear();
+
+    return 0;
+}
